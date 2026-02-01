@@ -230,6 +230,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            width: 100%;
+            user-select: none;
         }
 
         .custom-checkbox {
@@ -240,32 +242,50 @@
         }
 
         .custom-checkbox input[type="checkbox"] {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            position: relative;
-            background: white;
+            margin: 0;
         }
 
-        .custom-checkbox input[type="checkbox"]:checked {
-            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
-            border-color: #D3451C;
+        /* Custom styling for desktop only */
+        @media (hover: hover) and (pointer: fine) {
+            .custom-checkbox input[type="checkbox"] {
+                -webkit-appearance: none;
+                appearance: none;
+                border: 2px solid #ddd;
+                border-radius: 6px;
+                transition: all 0.3s ease;
+                position: relative;
+                background: white;
+            }
+
+            .custom-checkbox input[type="checkbox"]:checked {
+                background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+                border-color: #D3451C;
+            }
+
+            .custom-checkbox input[type="checkbox"]:checked::after {
+                content: '✓';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+            }
         }
 
-        .custom-checkbox input[type="checkbox"]:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+        /* Native iOS checkboxes - more reliable */
+        @supports (-webkit-touch-callout: none) {
+            .custom-checkbox input[type="checkbox"] {
+                width: 28px;
+                height: 28px;
+                -webkit-appearance: checkbox;
+                appearance: checkbox;
+                accent-color: #D3451C;
+            }
         }
 
         .activity-label {
@@ -969,15 +989,15 @@
                 week.activities.forEach(function(activity) {
                     activitiesHTML += `
                         <div class="activity" onclick="event.stopPropagation()">
-                            <div class="activity-row">
+                            <label class="activity-row" for="${activity.id}" style="cursor: pointer; display: flex; align-items: center; gap: 12px;">
                                 <div class="custom-checkbox">
-                                    <input type="checkbox" id="${activity.id}" onchange="update()" onclick="event.stopPropagation(); update()">
+                                    <input type="checkbox" id="${activity.id}" onchange="update()" onclick="event.stopPropagation()">
                                 </div>
                                 <div class="activity-label">
                                     <span class="activity-name">${activity.name}</span>
                                     <span class="activity-points">${activity.points} pts</span>
                                 </div>
-                            </div>
+                            </label>
                         </div>
                     `;
                 });
