@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Transformation Challenge Tracker</title>
+    <link rel="icon" href="apple-touch-icon.png?v=2">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tracker">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #D3451C;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .week-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .week-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .week-header:hover {
+            opacity: 0.8;
+        }
+
+        .week-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .week-title-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .week-challenge-title {
+            font-size: 0.65em;
+            font-weight: 500;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .collapse-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8em;
+        }
+
+        .week-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .week-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .week-header.collapsed .collapse-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .week-points {
+            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .activity {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .activity:hover {
+            background: #f0f1f3;
+        }
+
+        .activity-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            appearance: none;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            border-color: #D3451C;
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .activity-label {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .activity-points {
+            color: #D3451C;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .challenge-text {
+            margin-top: 8px;
+            padding: 10px;
+            background: white;
+            border-left: 3px solid #D3451C;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .final-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .final-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .final-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .final-item:hover {
+            background: #f0f1f3;
+        }
+
+        .final-item label {
+            flex: 1;
+            cursor: pointer;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .total-label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .total-points {
+            font-size: 3em;
+            font-weight: 700;
+        }
+
+        .max-points {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            color: white;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reset {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #ee5555;
+            transform: translateY(-2px);
+        }
+
+        .week-controls {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-week-control {
+            padding: 10px 20px;
+            border: 2px solid #D3451C;
+            border-radius: 10px;
+            background: white;
+            color: #D3451C;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn-week-control:hover {
+            background: #D3451C;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .goals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .week-card {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .total-points {
+                font-size: 2.5em;
+            }
+
+            .week-controls {
+                flex-direction: column;
+            }
+
+            .btn-week-control {
+                width: 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .button-group {
+                display: none;
+            }
+
+            .week-card, .profile-card, .final-section {
+                box-shadow: none;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 Transformation Challenge</h1>
+            <p>Track your journey to success</p>
+        </div>
+
+        <div class="profile-card">
+            <div class="input-group">
+                <label>Your Name</label>
+                <input type="text" id="userName" placeholder="Enter your name" onchange="saveData()">
+            </div>
+            <div class="goals-grid">
+                <div class="input-group">
+                    <label>Primary Goal</label>
+                    <input type="text" id="primaryGoal" placeholder="e.g., Lose 10 pounds" onchange="saveData()">
+                </div>
+                <div class="input-group">
+                    <label>Secondary Goal</label>
+                    <input type="text" id="secondaryGoal" placeholder="e.g., Build strength" onchange="saveData()">
+                </div>
+            </div>
+        </div>
+
+        <div class="week-controls">
+            <button class="btn-week-control" onclick="expandAllWeeks()">📂 Expand All Weeks</button>
+            <button class="btn-week-control" onclick="collapseAllWeeks()">📁 Collapse All Weeks</button>
+        </div>
+
+        <div id="weeksContainer"></div>
+
+        <div class="final-section">
+            <h2 class="section-title">Final Milestones</h2>
+            <div class="final-grid">
+                <div class="final-item">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="initialScan" onchange="update()">
+                    </div>
+                    <label for="initialScan">Initial Inbody Scan<br><span class="activity-points">20 pts</span></label>
+                </div>
+                <div class="final-item">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="finalScan" onchange="update()">
+                    </div>
+                    <label for="finalScan">Final Inbody Scan<br><span class="activity-points">20 pts</span></label>
+                </div>
+                <div class="final-item">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="primaryGoalAchieved" onchange="update()">
+                    </div>
+                    <label for="primaryGoalAchieved">Hit Primary Goal<br><span class="activity-points">20 pts</span></label>
+                </div>
+                <div class="final-item">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="secondaryGoalAchieved" onchange="update()">
+                    </div>
+                    <label for="secondaryGoalAchieved">Hit Secondary Goal<br><span class="activity-points">10 pts</span></label>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-label">Total Points</div>
+                <div class="total-points" id="totalPoints">0</div>
+                <div class="max-points">out of 630 points</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-export" onclick="exportToPDF()">📄 Export to PDF</button>
+                <button class="btn btn-reset" onclick="resetAll()">🔄 Reset All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var weeks = [
+            {
+                week: 1,
+                challenge: 'Take class with a team mate',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c1' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w1' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f1' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b1' }
+                ]
+            },
+            {
+                week: 2,
+                challenge: 'Take class at a studio other than your own',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c2' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w2' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f2' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b2' }
+                ]
+            },
+            {
+                week: 3,
+                challenge: 'Share a go-to snack and post pic',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c3' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w3' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f3' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b3' }
+                ]
+            },
+            {
+                week: 4,
+                challenge: 'Take a bonus class this week: 4 total classes',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c4' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w4' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f4' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b4' }
+                ]
+            },
+            {
+                week: 5,
+                challenge: 'Share a recipe in the team whatsapp',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c5' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w5' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f5' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b5' }
+                ]
+            },
+            {
+                week: 6,
+                challenge: 'Take a week-end class',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c6' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w6' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f6' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b6' }
+                ]
+            },
+            {
+                week: 7,
+                challenge: 'Share a non-scale victory to the whatsapp',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c7' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w7' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f7' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b7' }
+                ]
+            },
+            {
+                week: 8,
+                challenge: 'Take a different format than usual (hyrox, tread, strength)',
+                activities: [
+                    { name: '3 Classes', points: 25, id: 'c8' },
+                    { name: 'Complete Weekly Challenge', points: 15, id: 'w8' },
+                    { name: 'MyFitnessPal 5/7 days', points: 15, id: 'f8' },
+                    { name: 'Benchmark / Specialty', points: 15, id: 'b8' }
+                ]
+            }
+        ];
+
+        function toggleWeek(weekNum) {
+            var content = document.getElementById('week-content-' + weekNum);
+            var header = content.previousElementSibling;
+
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                header.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                header.classList.add('collapsed');
+            }
+
+            saveCollapsedState();
+        }
+
+        function saveCollapsedState() {
+            try {
+                var collapsed = [];
+                for (var i = 1; i <= 8; i++) {
+                    var content = document.getElementById('week-content-' + i);
+                    if (content && content.classList.contains('collapsed')) {
+                        collapsed.push(i);
+                    }
+                }
+                localStorage.setItem('collapsedWeeks', JSON.stringify(collapsed));
+            } catch (e) {
+                console.error('Save collapsed state error:', e);
+            }
+        }
+
+        function loadCollapsedState() {
+            try {
+                var saved = localStorage.getItem('collapsedWeeks');
+                if (saved) {
+                    var collapsed = JSON.parse(saved);
+                    collapsed.forEach(function(weekNum) {
+                        var content = document.getElementById('week-content-' + weekNum);
+                        var header = content ? content.previousElementSibling : null;
+                        if (content) content.classList.add('collapsed');
+                        if (header) header.classList.add('collapsed');
+                    });
+                } else {
+                    // Collapse all weeks by default
+                    collapseAllWeeks();
+                }
+            } catch (e) {
+                console.error('Load collapsed state error:', e);
+            }
+        }
+
+        function expandAllWeeks() {
+            for (var i = 1; i <= 8; i++) {
+                var content = document.getElementById('week-content-' + i);
+                var header = content ? content.previousElementSibling : null;
+                if (content) content.classList.remove('collapsed');
+                if (header) header.classList.remove('collapsed');
+            }
+            saveCollapsedState();
+        }
+
+        function collapseAllWeeks() {
+            for (var i = 1; i <= 8; i++) {
+                var content = document.getElementById('week-content-' + i);
+                var header = content ? content.previousElementSibling : null;
+                if (content) content.classList.add('collapsed');
+                if (header) header.classList.add('collapsed');
+            }
+            saveCollapsedState();
+        }
+
+        function generateWeeks() {
+            var container = document.getElementById('weeksContainer');
+            container.innerHTML = '';
+
+            weeks.forEach(function(week) {
+                var weekCard = document.createElement('div');
+                weekCard.className = 'week-card';
+
+                var weekPoints = 0;
+                week.activities.forEach(function(activity) {
+                    var checkbox = document.getElementById(activity.id);
+                    if (checkbox && checkbox.checked) {
+                        weekPoints += activity.points;
+                    }
+                });
+
+                var activitiesHTML = '';
+                week.activities.forEach(function(activity) {
+                    activitiesHTML += `
+                        <div class="activity">
+                            <div class="activity-row">
+                                <div class="custom-checkbox">
+                                    <input type="checkbox" id="${activity.id}" onchange="update()">
+                                </div>
+                                <div class="activity-label">
+                                    <span class="activity-name">${activity.name}</span>
+                                    <span class="activity-points">${activity.points} pts</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                weekCard.innerHTML = `
+                    <div class="week-header" onclick="toggleWeek(${week.week})">
+                        <div class="week-title">
+                            <div class="week-title-main">
+                                <span class="collapse-arrow">▼</span>
+                                Week ${week.week}
+                            </div>
+                            <div class="week-challenge-title">${week.challenge}</div>
+                        </div>
+                        <div class="week-points">${weekPoints} / 70 pts</div>
+                    </div>
+                    <div class="week-content" id="week-content-${week.week}">
+                        ${activitiesHTML}
+                    </div>
+                `;
+
+                container.appendChild(weekCard);
+            });
+        }
+
+        function update() {
+            var total = 0;
+
+            weeks.forEach(function(week) {
+                week.activities.forEach(function(activity) {
+                    var checkbox = document.getElementById(activity.id);
+                    if (checkbox && checkbox.checked) {
+                        total += activity.points;
+                    }
+                });
+            });
+
+            if (document.getElementById('initialScan').checked) total += 20;
+            if (document.getElementById('finalScan').checked) total += 20;
+            if (document.getElementById('primaryGoalAchieved').checked) total += 20;
+            if (document.getElementById('secondaryGoalAchieved').checked) total += 10;
+
+            document.getElementById('totalPoints').textContent = total;
+
+            generateWeeks();
+            saveData();
+        }
+
+        function saveData() {
+            try {
+                var data = {
+                    userName: document.getElementById('userName').value,
+                    primaryGoal: document.getElementById('primaryGoal').value,
+                    secondaryGoal: document.getElementById('secondaryGoal').value,
+                    boxes: {}
+                };
+
+                var allBoxes = document.querySelectorAll('input[type="checkbox"]');
+                for (var i = 0; i < allBoxes.length; i++) {
+                    if (allBoxes[i].id) {
+                        data.boxes[allBoxes[i].id] = allBoxes[i].checked;
+                    }
+                }
+
+                localStorage.setItem('trackerModern', JSON.stringify(data));
+            } catch (e) {
+                console.error('Save error:', e);
+            }
+        }
+
+        function loadData() {
+            try {
+                var saved = localStorage.getItem('trackerModern');
+                if (saved) {
+                    var data = JSON.parse(saved);
+                    document.getElementById('userName').value = data.userName || '';
+                    document.getElementById('primaryGoal').value = data.primaryGoal || '';
+                    document.getElementById('secondaryGoal').value = data.secondaryGoal || '';
+
+                    for (var id in data.boxes) {
+                        var box = document.getElementById(id);
+                        if (box) {
+                            box.checked = data.boxes[id];
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Load error:', e);
+            }
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
+
+        function resetAll() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                localStorage.removeItem('trackerModern');
+                document.getElementById('userName').value = '';
+                document.getElementById('primaryGoal').value = '';
+                document.getElementById('secondaryGoal').value = '';
+
+                var allBoxes = document.querySelectorAll('input[type="checkbox"]');
+                for (var i = 0; i < allBoxes.length; i++) {
+                    allBoxes[i].checked = false;
+                }
+
+                update();
+            }
+        }
+
+        window.onload = function() {
+            generateWeeks();
+            loadData();
+            update();
+            loadCollapsedState();
+        };
+    </script>
+</body>
+</html>
