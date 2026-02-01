@@ -215,10 +215,15 @@
             background: #f8f9fa;
             border-radius: 12px;
             transition: all 0.2s ease;
+            cursor: default;
         }
 
         .activity:hover {
             background: #f0f1f3;
+        }
+
+        .week-content {
+            cursor: default;
         }
 
         .activity-row {
@@ -238,11 +243,13 @@
             width: 24px;
             height: 24px;
             cursor: pointer;
+            -webkit-appearance: none;
             appearance: none;
             border: 2px solid #ddd;
             border-radius: 6px;
             transition: all 0.3s ease;
             position: relative;
+            background: white;
         }
 
         .custom-checkbox input[type="checkbox"]:checked {
@@ -751,25 +758,25 @@
             <div class="final-grid">
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="initialScan" onchange="update()">
+                        <input type="checkbox" id="initialScan" onchange="update()" onclick="update()">
                     </div>
                     <label for="initialScan">Initial Inbody Scan<br><span class="activity-points">20 pts</span></label>
                 </div>
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="finalScan" onchange="update()">
+                        <input type="checkbox" id="finalScan" onchange="update()" onclick="update()">
                     </div>
                     <label for="finalScan">Final Inbody Scan<br><span class="activity-points">20 pts</span></label>
                 </div>
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="primaryGoalAchieved" onchange="update()">
+                        <input type="checkbox" id="primaryGoalAchieved" onchange="update()" onclick="update()">
                     </div>
                     <label for="primaryGoalAchieved">Hit Primary Goal<br><span class="activity-points">20 pts</span></label>
                 </div>
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="secondaryGoalAchieved" onchange="update()">
+                        <input type="checkbox" id="secondaryGoalAchieved" onchange="update()" onclick="update()">
                     </div>
                     <label for="secondaryGoalAchieved">Hit Secondary Goal<br><span class="activity-points">10 pts</span></label>
                 </div>
@@ -961,10 +968,10 @@
                 var activitiesHTML = '';
                 week.activities.forEach(function(activity) {
                     activitiesHTML += `
-                        <div class="activity">
+                        <div class="activity" onclick="event.stopPropagation()">
                             <div class="activity-row">
                                 <div class="custom-checkbox">
-                                    <input type="checkbox" id="${activity.id}" onchange="update()">
+                                    <input type="checkbox" id="${activity.id}" onchange="update()" onclick="event.stopPropagation(); update()">
                                 </div>
                                 <div class="activity-label">
                                     <span class="activity-name">${activity.name}</span>
@@ -986,13 +993,50 @@
                         </div>
                         <div class="week-points">${weekPoints} / 70 pts</div>
                     </div>
-                    <div class="week-content" id="week-content-${week.week}">
+                    <div class="week-content" id="week-content-${week.week}" onclick="event.stopPropagation()">
                         ${activitiesHTML}
                     </div>
                 `;
 
                 container.appendChild(weekCard);
             });
+
+            // Add event listeners after generating (for iOS compatibility)
+            attachAllCheckboxListeners();
+
+            // Restore collapsed state after regenerating
+            restoreCollapsedState();
+        }
+
+        function restoreCollapsedState() {
+            try {
+                var saved = localStorage.getItem('collapsedWeeks');
+                if (saved) {
+                    var collapsed = JSON.parse(saved);
+                    collapsed.forEach(function(weekNum) {
+                        var content = document.getElementById('week-content-' + weekNum);
+                        var header = content ? content.previousElementSibling : null;
+                        if (content) content.classList.add('collapsed');
+                        if (header) header.classList.add('collapsed');
+                    });
+                }
+            } catch (e) {
+                console.error('Restore collapsed state error:', e);
+            }
+        }
+
+        function attachAllCheckboxListeners() {
+            var allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                allCheckboxes[i].addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    update();
+                });
+                allCheckboxes[i].addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    setTimeout(update, 50);
+                });
+            }
         }
 
         function update() {
