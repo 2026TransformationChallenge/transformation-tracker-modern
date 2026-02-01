@@ -778,25 +778,25 @@
             <div class="final-grid">
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="initialScan" onchange="update()" onclick="update()">
+                        <input type="checkbox" id="initialScan" onchange="handleCheckboxChange()">
                     </div>
                     <label for="initialScan">Initial Inbody Scan<br><span class="activity-points">20 pts</span></label>
                 </div>
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="finalScan" onchange="update()" onclick="update()">
+                        <input type="checkbox" id="finalScan" onchange="handleCheckboxChange()">
                     </div>
                     <label for="finalScan">Final Inbody Scan<br><span class="activity-points">20 pts</span></label>
                 </div>
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="primaryGoalAchieved" onchange="update()" onclick="update()">
+                        <input type="checkbox" id="primaryGoalAchieved" onchange="handleCheckboxChange()">
                     </div>
                     <label for="primaryGoalAchieved">Hit Primary Goal<br><span class="activity-points">20 pts</span></label>
                 </div>
                 <div class="final-item">
                     <div class="custom-checkbox">
-                        <input type="checkbox" id="secondaryGoalAchieved" onchange="update()" onclick="update()">
+                        <input type="checkbox" id="secondaryGoalAchieved" onchange="handleCheckboxChange()">
                     </div>
                     <label for="secondaryGoalAchieved">Hit Secondary Goal<br><span class="activity-points">10 pts</span></label>
                 </div>
@@ -899,7 +899,18 @@
             }
         ];
 
-        function toggleWeek(weekNum) {
+        function handleCheckboxChange() {
+            setTimeout(function() {
+                update();
+            }, 50);
+        }
+
+        function toggleWeek(weekNum, event) {
+            // Don't toggle if clicking on a checkbox or label
+            if (event && (event.target.tagName === 'INPUT' || event.target.tagName === 'LABEL')) {
+                return;
+            }
+
             var content = document.getElementById('week-content-' + weekNum);
             var header = content.previousElementSibling;
 
@@ -988,22 +999,22 @@
                 var activitiesHTML = '';
                 week.activities.forEach(function(activity) {
                     activitiesHTML += `
-                        <div class="activity" onclick="event.stopPropagation()">
-                            <label class="activity-row" for="${activity.id}" style="cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                        <div class="activity">
+                            <div class="activity-row">
                                 <div class="custom-checkbox">
-                                    <input type="checkbox" id="${activity.id}" onchange="update()" onclick="event.stopPropagation()">
+                                    <input type="checkbox" id="${activity.id}" onchange="handleCheckboxChange()">
                                 </div>
-                                <div class="activity-label">
+                                <label for="${activity.id}" class="activity-label" style="cursor: pointer;">
                                     <span class="activity-name">${activity.name}</span>
                                     <span class="activity-points">${activity.points} pts</span>
-                                </div>
-                            </label>
+                                </label>
+                            </div>
                         </div>
                     `;
                 });
 
                 weekCard.innerHTML = `
-                    <div class="week-header" onclick="toggleWeek(${week.week})">
+                    <div class="week-header" onclick="toggleWeek(${week.week}, event)">
                         <div class="week-title">
                             <div class="week-title-main">
                                 <span class="collapse-arrow">▼</span>
@@ -1013,7 +1024,7 @@
                         </div>
                         <div class="week-points">${weekPoints} / 70 pts</div>
                     </div>
-                    <div class="week-content" id="week-content-${week.week}" onclick="event.stopPropagation()">
+                    <div class="week-content" id="week-content-${week.week}">
                         ${activitiesHTML}
                     </div>
                 `;
@@ -1048,13 +1059,10 @@
         function attachAllCheckboxListeners() {
             var allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
             for (var i = 0; i < allCheckboxes.length; i++) {
-                allCheckboxes[i].addEventListener('change', function(e) {
-                    e.stopPropagation();
-                    update();
-                });
-                allCheckboxes[i].addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    setTimeout(update, 50);
+                allCheckboxes[i].addEventListener('change', function() {
+                    setTimeout(function() {
+                        update();
+                    }, 10);
                 });
             }
         }
