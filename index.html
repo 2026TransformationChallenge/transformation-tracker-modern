@@ -730,10 +730,10 @@
         <div class="quick-links">
             <div class="quick-links-title">Quick Links</div>
             <div class="quick-links-grid">
-                <a href="https://www.myfitnesspal.com/" target="_blank" class="quick-link-btn btn-myfitnesspal">
+                <a href="myfitnesspal://" onclick="openApp(event, 'myfitnesspal://', 'https://www.myfitnesspal.com/')" class="quick-link-btn btn-myfitnesspal">
                     📊 MyFitnessPal
                 </a>
-                <a href="https://web.whatsapp.com/" target="_blank" class="quick-link-btn btn-whatsapp">
+                <a href="whatsapp://" onclick="openApp(event, 'whatsapp://', 'https://web.whatsapp.com/')" class="quick-link-btn btn-whatsapp">
                     💬 WhatsApp
                 </a>
             </div>
@@ -1125,6 +1125,22 @@
 
                 update();
             }
+        }
+
+        function openApp(event, appUrl, webUrl) {
+            event.preventDefault();
+
+            // Try to open the app
+            window.location.href = appUrl;
+
+            // If app doesn't open within 2 seconds, open web version
+            var start = Date.now();
+            setTimeout(function() {
+                // Check if we're still on the page (app didn't open)
+                if (Date.now() - start < 2100) {
+                    window.open(webUrl, '_blank');
+                }
+            }, 2000);
         }
 
         window.onload = function() {
