@@ -19,14 +19,46 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #D3451C 0%, #E86F3E 100%);
+            background:
+                radial-gradient(circle at 20% 30%, rgba(255, 152, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(230, 81, 0, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg,
+                    #C13216 0%,
+                    #D3451C 15%,
+                    #E56020 35%,
+                    #E86F3E 55%,
+                    #FF8C42 75%,
+                    #FFA05A 100%
+                );
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(255, 255, 255, 0.03) 100px,
+                    rgba(255, 255, 255, 0.03) 200px
+                );
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
@@ -362,6 +394,57 @@
             transform: translateY(-2px);
         }
 
+        .quick-links {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .quick-links-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .quick-link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+
+        .quick-link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-myfitnesspal {
+            background: linear-gradient(135deg, #0072CE 0%, #00A0DC 100%);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        }
+
         .week-controls {
             background: white;
             border-radius: 20px;
@@ -423,26 +506,199 @@
             .btn-week-control {
                 width: 100%;
             }
+
+            .quick-links-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media print {
+            @page {
+                size: landscape;
+                margin: 8mm;
+            }
+
             body {
-                background: white;
-                padding: 0;
+                background: white !important;
+                padding: 0 !important;
+            }
+
+            body::before {
+                display: none;
             }
 
             .container {
-                max-width: 100%;
+                max-width: 100% !important;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #ff9a76 0%, #ffc3a0 50%, #ffafbd 100%);
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .header h1 {
+                background: none;
+                -webkit-text-fill-color: #1a4d2e;
+                color: #1a4d2e;
+                font-size: 1.5em;
+            }
+
+            .header p {
+                display: none;
+            }
+
+            .profile-card {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .goals-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .input-group {
+                margin-bottom: 5px;
+            }
+
+            .input-group label {
+                font-size: 10px;
+                margin-bottom: 2px;
+            }
+
+            .input-group input {
+                border: 1px solid #333;
+                padding: 3px;
+                font-size: 10px;
+            }
+
+            .quick-links {
+                display: none;
+            }
+
+            .week-controls {
+                display: none;
+            }
+
+            #weeksContainer {
+                display: none;
+            }
+
+            .week-card {
+                display: none;
+            }
+
+            .final-section {
+                padding: 10px;
+            }
+
+            .section-title {
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+
+            .final-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 5px;
+                margin-bottom: 10px;
+            }
+
+            .final-item {
+                padding: 5px;
+                font-size: 9px;
+            }
+
+            .total-section {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .total-label {
+                font-size: 0.9em;
+            }
+
+            .total-points {
+                font-size: 2em;
+            }
+
+            .max-points {
+                font-size: 0.8em;
             }
 
             .button-group {
                 display: none;
             }
 
-            .week-card, .profile-card, .final-section {
-                box-shadow: none;
-                break-inside: avoid;
-                page-break-inside: avoid;
+            /* Create table for print */
+            .profile-card::after {
+                content: '';
+                display: block;
+                margin-top: 10px;
+            }
+
+            .container::after {
+                content: '';
+                display: table;
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            /* Inject table HTML */
+            .profile-card {
+                page-break-after: avoid;
+            }
+
+            /* Table styles */
+            .print-table {
+                display: table !important;
+                width: 100%;
+                border-collapse: collapse;
+                margin: 10px 0;
+                font-size: 7px;
+            }
+
+            .print-table th {
+                background-color: #d4d4c8;
+                padding: 3px 2px;
+                text-align: center;
+                font-weight: bold;
+                border: 1px solid #999;
+                font-size: 7px;
+                line-height: 1.2;
+            }
+
+            .print-table td {
+                padding: 2px 1px;
+                border: 1px solid #ddd;
+                text-align: center;
+                font-size: 7px;
+            }
+
+            .print-table .week-cell {
+                font-weight: bold;
+                background-color: #f0f0f0;
+                font-size: 8px;
+            }
+
+            .print-table .challenge-cell {
+                text-align: left;
+                padding-left: 4px;
+                font-size: 7px;
+            }
+
+            .custom-checkbox input[type="checkbox"] {
+                width: 12px;
+                height: 12px;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .custom-checkbox input[type="checkbox"]:checked {
+                background: #4CAF50 !important;
+                border-color: #4CAF50 !important;
             }
         }
     </style>
@@ -468,6 +724,18 @@
                     <label>Secondary Goal</label>
                     <input type="text" id="secondaryGoal" placeholder="e.g., Build strength" onchange="saveData()">
                 </div>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <div class="quick-links-title">Quick Links</div>
+            <div class="quick-links-grid">
+                <a href="https://www.myfitnesspal.com/" target="_blank" class="quick-link-btn btn-myfitnesspal">
+                    📊 MyFitnessPal
+                </a>
+                <a href="https://web.whatsapp.com/" target="_blank" class="quick-link-btn btn-whatsapp">
+                    💬 WhatsApp
+                </a>
             </div>
         </div>
 
@@ -793,8 +1061,54 @@
             }
         }
 
+        function generatePrintTable() {
+            var printTable = document.getElementById('printTable');
+            if (printTable) {
+                printTable.remove();
+            }
+
+            var table = document.createElement('table');
+            table.id = 'printTable';
+            table.className = 'print-table';
+            table.style.display = 'none';
+
+            var thead = `
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>3 Classes<br>(25pts)</th>
+                        <th>Complete Weekly Challenge<br>(15pts)</th>
+                        <th>My Fitness Pal Tracking 5/7 days<br>(15pts)</th>
+                        <th>Take the Benchmark / Specialty of the week<br>(15pts)</th>
+                        <th>Weekly Challenges</th>
+                    </tr>
+                </thead>
+            `;
+
+            var tbody = '<tbody>';
+            weeks.forEach(function(week) {
+                tbody += `
+                    <tr>
+                        <td class="week-cell">W${week.week}</td>
+                        <td><div class="custom-checkbox"><input type="checkbox" ${document.getElementById('c' + week.week).checked ? 'checked' : ''}></div></td>
+                        <td><div class="custom-checkbox"><input type="checkbox" ${document.getElementById('w' + week.week).checked ? 'checked' : ''}></div></td>
+                        <td><div class="custom-checkbox"><input type="checkbox" ${document.getElementById('f' + week.week).checked ? 'checked' : ''}></div></td>
+                        <td><div class="custom-checkbox"><input type="checkbox" ${document.getElementById('b' + week.week).checked ? 'checked' : ''}></div></td>
+                        <td class="challenge-cell">${week.challenge}</td>
+                    </tr>
+                `;
+            });
+            tbody += '</tbody>';
+
+            table.innerHTML = thead + tbody;
+            document.querySelector('.profile-card').after(table);
+        }
+
         function exportToPDF() {
-            window.print();
+            generatePrintTable();
+            setTimeout(function() {
+                window.print();
+            }, 100);
         }
 
         function resetAll() {
